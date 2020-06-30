@@ -35,22 +35,22 @@ app.post('/TosBuild',(req,res)=>{
             ],
             { cwd : path.join(__dirname), shell: true,  detached: true }
         );
-    
         cp.on('exit',()=>{
-            childProcess.spawn ('python3', [path.join(__dirname, 'make-cop-package-tmaxos.py'), '-tc', '--resource', path.join(__dirname,appName)],
-                        {  cwd : __dirname, shell: true,  detached: true });
-                       let stdOut = '';
-                        cp.stdout.on('data', data => {
-                           stdOut += data;
-                           console.log(stdOut); 
-                       });
-                       cp.on('exit', () => {
-                           res.sendFile( path.join(__dirname, 'COPApp.tai'));
-                        });
+            createCopApp(res);
         });
     });
-    
-    
 });
 
+async function createCopApp(res){
+    const cp =childProcess.spawn ('python3', [path.join(__dirname, 'make-cop-package-tmaxos.py'), '-tc', '--resource', path.join(__dirname,appName)],
+    {  cwd : __dirname, shell: true,  detached: true });
+   let stdOut = '';
+    cp.stdout.on('data', data => {
+       stdOut += data;
+       console.log(stdOut); 
+   });
+   cp.on('exit', () => {
+       res.sendFile( path.join(__dirname, 'COPApp.tai'));
+    });
+}
 app.listen(port, ()=>console.log('Tos build service is listening'));
